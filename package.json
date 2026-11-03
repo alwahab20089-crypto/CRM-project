@@ -1,0 +1,19 @@
+{
+  "name": "estateflow-crm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Commercial real estate CRM (SaaS and self-hosted editions)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "format": "prettier --write \"**/*.{md,json}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
+}
