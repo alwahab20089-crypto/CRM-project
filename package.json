@@ -10,9 +10,13 @@
   "engines": {
     "node": ">=20"
   },
-  "scripts": {
-    "format": "prettier --write \"**/*.{md,json}\""
-  },
+ "scripts": {
+  "format": "prettier --write \"**/*.{md,json}\"",
+  "dev:web": "npm run dev -w apps/web",
+  "build:web": "npm run build -w apps/web",
+  "lint:web": "npm run lint -w apps/web",
+  "typecheck:web": "npm run typecheck -w apps/web"
+},
   "devDependencies": {
     "prettier": "^3.9.10"
   }
