@@ -1,3 +1,4 @@
+
 import { CalendarDays, FileText } from 'lucide-react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AcceptInvitationPage } from '@/features/auth/pages/accept-invitation-page';
@@ -6,6 +7,8 @@ import { LoginPage } from '@/features/auth/pages/login-page';
 import { RegisterPage } from '@/features/auth/pages/register-page';
 import { ResetPasswordPage } from '@/features/auth/pages/reset-password-page';
 import { DashboardPage } from '@/features/dashboard/dashboard-page';
+import { LeadDetailPage } from '@/features/leads/lead-detail-page';
+import { LeadsPage } from '@/features/leads/leads-page';
 import { SettingsPage } from '@/features/settings/settings-page';
 import { AppLayout } from '@/layouts/app-layout';
 import { AuthLayout } from '@/layouts/auth-layout';
@@ -13,7 +16,6 @@ import { ActivitiesPage } from '@/pages/activities-page';
 import { AnalyticsPage } from '@/pages/analytics-page';
 import { ComingSoonPage } from '@/pages/coming-soon-page';
 import { ContactsPage } from '@/pages/contacts-page';
-import { LeadsPage } from '@/pages/leads-page';
 import { NotFoundPage } from '@/pages/not-found-page';
 import { PipelinePage } from '@/pages/pipeline-page';
 import { PropertiesPage } from '@/pages/properties-page';
@@ -57,6 +59,7 @@ export const router = createBrowserRouter([
               { index: true, element: <Navigate to="dashboard" replace /> },
               { path: 'dashboard', element: <DashboardPage /> },
               { path: 'leads', element: <LeadsPage /> },
+              { path: 'leads/:leadId', element: <LeadDetailPage /> },
               { path: 'contacts', element: <ContactsPage /> },
               { path: 'properties', element: <PropertiesPage /> },
               { path: 'pipeline', element: <PipelinePage /> },

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -8,29 +9,50 @@ import { PasswordInput } from '@/components/common/password-input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { sleep } from '@/lib/utils';
+import { ApiError } from '@/lib/api-client';
 import { useAuth } from '@/providers/auth-provider';
 import { registerSchema, type RegisterValues } from '../schemas';
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { register: signUp } = useAuth();
+  const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
     control,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: '', email: '', organizationName: '', password: '', confirmPassword: '', terms: false },
   });
 
-  const onSubmit = async () => {
-    // TODO(Phase 3): POST /api/v1/auth/register (creates user + organization + trial).
-    await sleep(900);
-    signIn(false);
-    toast.success('Account created (demo mode)');
-    navigate('/app/dashboard', { replace: true });
+  const onSubmit = async (values: RegisterValues) => {
+    setServerError(null);
+    try {
+      await signUp({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        organizationName: values.organizationName,
+      });
+      toast.success('Account created');
+      navigate('/app/dashboard', { replace: true });
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'EMAIL_IN_USE') {
+        setError('email', { message: 'An account with this email already exists.' });
+      } else if (err instanceof ApiError && err.status === 422) {
+        for (const detail of err.errors) {
+          if (detail.path === 'email' || detail.path === 'password' || detail.path === 'name') {
+            setError(detail.path, { message: detail.message });
+          }
+        }
+        setServerError('Please correct the highlighted fields.');
+      } else {
+        setServerError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.');
+      }
+    }
   };
 
   return (
@@ -39,6 +61,11 @@ export function RegisterPage() {
       <p className="mt-1 text-sm text-muted-foreground">Start managing leads and listings in minutes.</p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6 space-y-4">
+        {serverError && (
+          <div role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {serverError}
+          </div>
+        )}
         <FormField id="name" label="Full name" error={errors.name?.message}>
           <Input autoComplete="name" {...fieldA11y('name', errors.name?.message)} {...register('name')} />
         </FormField>

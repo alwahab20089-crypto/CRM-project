@@ -68,6 +68,7 @@ export type LeadStatus =
   | 'NEGOTIATION'
   | 'WON'
   | 'LOST';
+
 export type LeadSource =
   | 'WALK_IN'
   | 'REFERRAL'
@@ -75,8 +76,8 @@ export type LeadSource =
   | 'FACEBOOK'
   | 'INSTAGRAM'
   | 'WHATSAPP'
-  | 'PORTAL'
-  | 'CALL'
+  | 'PROPERTY_PORTAL'
+  | 'PHONE_CALL'
   | 'OTHER';
 export type LeadType = 'BUYER' | 'SELLER' | 'TENANT' | 'LANDLORD' | 'INVESTOR';
 export type PropertyType =

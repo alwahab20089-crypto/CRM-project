@@ -11,8 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useActiveOrganization } from '@/hooks/use-crm-queries';
-import { sleep } from '@/lib/utils';
-
+import { ApiError } from '@/lib/api-client';
+import { useAuth } from '@/providers/auth-provider';
+import { authService } from '@/services/auth-service';
 const currencies = ['USD', 'EUR', 'GBP', 'AED', 'PKR', 'INR'];
 const timezones = ['UTC', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 'Asia/Dubai', 'Asia/Karachi', 'Asia/Kolkata'];
 
@@ -31,6 +32,7 @@ const schema = z.object({
 type Values = z.infer<typeof schema>;
 
 export function OrganizationSettings() {
+  const { reloadSession } = useAuth();
   const { organization, isLoading } = useActiveOrganization();
   const {
     register,
@@ -46,11 +48,22 @@ export function OrganizationSettings() {
 
   if (isLoading || !organization) return <Skeleton className="h-96 w-full" aria-busy="true" />;
 
-  const onSubmit = async () => {
-    // TODO(Phase 3): PATCH /api/v1/organizations/current
-    await sleep(700);
-    toast.success('Organization settings saved (demo mode)');
-  };
+  const onSubmit = async (values: Values) => {
+  try {
+    await authService.updateOrganization(organization._id, {
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      currency: values.currency,
+      timezone: values.timezone,
+      address: { line1: values.line1, city: values.city, state: values.state, country: values.country, postalCode: values.postalCode },
+    });
+    await reloadSession();
+    toast.success('Organization settings saved');
+  } catch (err) {
+    toast.error(err instanceof ApiError ? err.message : 'Could not save settings');
+  }
+};
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>

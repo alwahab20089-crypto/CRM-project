@@ -16,7 +16,7 @@ import { useAuth } from '@/providers/auth-provider';
 
 export function UserMenu() {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
   const { data: user } = useCurrentUser();
 
   return (
@@ -40,14 +40,14 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => {
-            signOut();
-            toast.success('Signed out');
-            navigate('/login', { replace: true });
-          }}
-        >
-          <LogOut /> Log out
-        </DropdownMenuItem>
+  onSelect={async () => {
+    await logout();
+    toast.success('Signed out');
+    navigate('/login', { replace: true });
+  }}
+>
+  <LogOut /> Log out
+</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

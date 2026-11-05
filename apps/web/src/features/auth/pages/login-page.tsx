@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -8,14 +9,15 @@ import { PasswordInput } from '@/components/common/password-input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { sleep } from '@/lib/utils';
+import { ApiError } from '@/lib/api-client';
 import { useAuth } from '@/providers/auth-provider';
 import { loginSchema, type LoginValues } from '../schemas';
 
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn } = useAuth();
+  const { login } = useAuth();
+  const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
     control,
@@ -27,23 +29,28 @@ export function LoginPage() {
   });
 
   const onSubmit = async (values: LoginValues) => {
-    // TODO(Phase 3): POST /api/v1/auth/login. Mock only: any valid email/password signs in.
-    await sleep(700);
-    signIn(values.remember);
-    toast.success('Signed in (demo mode)');
-    const from = (location.state as { from?: string } | null)?.from;
-    navigate(from ?? '/app/dashboard', { replace: true });
+    setServerError(null);
+    try {
+      await login(values);
+      toast.success('Welcome back');
+      const from = (location.state as { from?: string } | null)?.from;
+      navigate(from ?? '/app/dashboard', { replace: true });
+    } catch (err) {
+      setServerError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.');
+    }
   };
 
   return (
     <div>
       <h1 className="text-page-title">Welcome back</h1>
       <p className="mt-1 text-sm text-muted-foreground">Sign in to your EstateFlow workspace.</p>
-      <p className="mt-4 rounded-md bg-info/10 px-3 py-2 text-xs text-info">
-        Demo mode: any valid email and a password sign you in. No real authentication yet.
-      </p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6 space-y-4">
+        {serverError && (
+          <div role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {serverError}
+          </div>
+        )}
         <FormField id="email" label="Email" error={errors.email?.message}>
           <Input type="email" autoComplete="email" placeholder="you@company.com" {...fieldA11y('email', errors.email?.message)} {...register('email')} />
         </FormField>

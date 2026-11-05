@@ -3,6 +3,7 @@ import { daysAgo, daysFromNow, ORG_ID } from './helpers';
 
 type Row = [string, string, LeadSource, LeadStatus, Priority, LeadType, PropertyType, string, number, number | null];
 
+
 const rows: Row[] = [
   ['Olivia', 'Bennett', 'WEBSITE', 'NEW', 'HIGH', 'BUYER', 'APARTMENT', 'usr_002', 0, 0],
   ['Liam', 'Carter', 'FACEBOOK', 'CONTACTED', 'MEDIUM', 'BUYER', 'HOUSE', 'usr_003', 1, 1],
@@ -10,8 +11,8 @@ const rows: Row[] = [
   ['Noah', 'Patel', 'INSTAGRAM', 'MEETING_SCHEDULED', 'MEDIUM', 'TENANT', 'APARTMENT', 'usr_002', 3, 1],
   ['Emma', 'Rossi', 'WALK_IN', 'NEGOTIATION', 'URGENT', 'BUYER', 'HOUSE', 'usr_003', 4, 0],
   ['Lucas', 'Meyer', 'WEBSITE', 'WON', 'MEDIUM', 'SELLER', 'PLOT', 'usr_001', 6, null],
-  ['Ava', 'Johansson', 'PORTAL', 'LOST', 'LOW', 'BUYER', 'APARTMENT', 'usr_004', 8, null],
-  ['Mason', 'Clarke', 'CALL', 'CONTACTED', 'MEDIUM', 'LANDLORD', 'OFFICE', 'usr_002', 9, 3],
+  ['Ava', 'Johansson', 'PROPERTY_PORTAL', 'LOST', 'LOW', 'BUYER', 'APARTMENT', 'usr_004', 8, null],
+  ['Mason', 'Clarke', 'PHONE_CALL', 'CONTACTED', 'MEDIUM', 'LANDLORD', 'OFFICE', 'usr_002', 9, 3],
   ['Isabella', 'Costa', 'FACEBOOK', 'NEW', 'HIGH', 'BUYER', 'FARMHOUSE', 'usr_003', 0, 1],
   ['Ethan', 'Walker', 'REFERRAL', 'QUALIFIED', 'MEDIUM', 'INVESTOR', 'COMMERCIAL', 'usr_001', 11, 5],
 ];

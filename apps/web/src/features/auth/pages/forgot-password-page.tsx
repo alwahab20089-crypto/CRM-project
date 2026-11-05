@@ -7,11 +7,13 @@ import { FormField, fieldA11y } from '@/components/common/form-field';
 import { LoadingButton } from '@/components/common/loading-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { sleep } from '@/lib/utils';
+import { ApiError } from '@/lib/api-client';
+import { authService } from '@/services/auth-service';
 import { forgotPasswordSchema, type ForgotPasswordValues } from '../schemas';
 
 export function ForgotPasswordPage() {
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -19,9 +21,13 @@ export function ForgotPasswordPage() {
   } = useForm<ForgotPasswordValues>({ resolver: zodResolver(forgotPasswordSchema), defaultValues: { email: '' } });
 
   const onSubmit = async (values: ForgotPasswordValues) => {
-    // TODO(Phase 3): POST /api/v1/auth/forgot-password (always respond generically).
-    await sleep(700);
-    setSentTo(values.email);
+    setServerError(null);
+    try {
+      await authService.forgotPassword(values.email); // the API answers identically whether or not the email exists
+      setSentTo(values.email);
+    } catch (err) {
+      setServerError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.');
+    }
   };
 
   if (sentTo) {
@@ -36,7 +42,7 @@ export function ForgotPasswordPage() {
         </p>
         <div className="mt-6 flex flex-col gap-2">
           <Button asChild>
-            <Link to="/reset-password">Continue to reset (demo)</Link>
+            <Link to="/login">Back to sign in</Link>
           </Button>
           <Button variant="ghost" onClick={() => setSentTo(null)}>
             Use a different email
@@ -51,6 +57,11 @@ export function ForgotPasswordPage() {
       <h1 className="text-page-title">Forgot your password?</h1>
       <p className="mt-1 text-sm text-muted-foreground">Enter your email and we will send you a reset link.</p>
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6 space-y-4">
+        {serverError && (
+          <div role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {serverError}
+          </div>
+        )}
         <FormField id="email" label="Email" error={errors.email?.message}>
           <Input type="email" autoComplete="email" {...fieldA11y('email', errors.email?.message)} {...register('email')} />
         </FormField>

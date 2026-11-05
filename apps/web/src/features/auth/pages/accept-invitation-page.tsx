@@ -12,14 +12,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useInvitationPreview } from '@/hooks/use-crm-queries';
 import { roleLabels } from '@/lib/labels';
 import { sleep } from '@/lib/utils';
-import { useAuth } from '@/providers/auth-provider';
 import { acceptInvitationSchema, type AcceptInvitationValues } from '../schemas';
 
 export function AcceptInvitationPage() {
   const [params] = useSearchParams();
   const token = params.get('token') ?? 'demo';
   const navigate = useNavigate();
-  const { signIn } = useAuth();
   const { data: invite, isLoading, isError, refetch } = useInvitationPreview(token);
   const {
     register,
@@ -31,12 +29,11 @@ export function AcceptInvitationPage() {
   });
 
   const onSubmit = async () => {
-    // TODO(Phase 3): POST /api/v1/members/invitations/accept with the invitation token.
-    await sleep(800);
-    signIn(false);
-    toast.success('Invitation accepted (demo mode)');
-    navigate('/app/dashboard', { replace: true });
-  };
+  // TODO(team-management phase): POST /api/v1/members/invitations/accept
+  await sleep(600);
+  toast.info('Invitation acceptance needs the team-management API, which is not built yet.');
+  navigate('/login', { replace: true });
+};
 
   if (isLoading) {
     return (

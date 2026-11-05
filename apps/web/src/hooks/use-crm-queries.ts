@@ -2,8 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/providers/auth-provider';
 import { crmService } from '@/services';
 
-export const useCurrentUser = () => useQuery({ queryKey: ['currentUser'], queryFn: () => crmService.getCurrentUser() });
-export const useOrganizations = () => useQuery({ queryKey: ['organizations'], queryFn: () => crmService.getOrganizations() });
 export const useDashboard = () => useQuery({ queryKey: ['dashboard'], queryFn: () => crmService.getDashboard() });
 export const useLeads = () => useQuery({ queryKey: ['leads'], queryFn: () => crmService.getLeads() });
 export const useContacts = () => useQuery({ queryKey: ['contacts'], queryFn: () => crmService.getContacts() });
@@ -19,9 +17,18 @@ export const useSubscriptionOverview = () =>
 export const useInvitationPreview = (token: string) =>
   useQuery({ queryKey: ['invitation', token], queryFn: () => crmService.getInvitationPreview(token) });
 
+// Identity and organizations now come from the real session (see AuthProvider).
+export function useCurrentUser() {
+  const { user, status } = useAuth();
+  return { data: user ?? undefined, isLoading: status === 'loading' };
+}
+
 export function useActiveOrganization() {
-  const { activeOrganizationId } = useAuth();
-  const query = useOrganizations();
-  const organization = query.data?.find((o) => o._id === activeOrganizationId) ?? query.data?.[0];
-  return { organization, isLoading: query.isLoading, isError: query.isError, refetch: query.refetch };
+  const { activeMembership, status } = useAuth();
+  return {
+    organization: activeMembership?.organization,
+    isLoading: status === 'loading',
+    isError: false,
+    refetch: () => undefined,
+  };
 }
